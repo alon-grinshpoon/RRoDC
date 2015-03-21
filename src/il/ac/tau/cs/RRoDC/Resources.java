@@ -2,9 +2,9 @@ package il.ac.tau.cs.RRoDC;
 
 /**
  * A class representing a group of resources
+ * 
  * @author Alon Grinshpoon
  */
-
 public class Resources {
 
 	private int amount;
@@ -12,24 +12,25 @@ public class Resources {
 	private final Region region;
 
 	public Resources(Type type, Region region) {
+		this.amount = 0;
 		this.type = type;
 		this.region = region;
 	}
 
-	/**s
+	/**
 	 * @param The amount of resources to set
 	 */
 	public void setAmount(int amount) {
 		this.amount = amount;
 	}
-	
+
 	/**
 	 * @return The amount of resources
 	 */
 	public int getAmount() {
 		return amount;
 	}
-	
+
 	/**
 	 * @return The resources' type
 	 */
@@ -42,5 +43,11 @@ public class Resources {
 	 */
 	public Region getRegion() {
 		return region;
+	}
+
+	@Override
+	public String toString() {
+		return this.type.toString() + ", " + this.region.toString() + ": "
+				+ this.amount + " (" + super.toString() + ")";
 	}
 }

@@ -20,7 +20,6 @@ public class DemandPDF {
 		this.type = type;
 		this.region = region;
 		this.probabilityVector = probabilityVector;
-		// TODO Verify probabilty vector
 	}
 
 	/**
@@ -65,7 +64,7 @@ public class DemandPDF {
 	 * @return The index of the front line in the PDF's probability vector
 	 */
 	public int getFrontLine() {
-		return frontLine;
+		return this.frontLine;
 	}
 	
 	/**
@@ -73,5 +72,24 @@ public class DemandPDF {
 	 */
 	public double getFrontlineValue() {
 		return this.getProbabilityVector().get(frontLine);
+	}
+
+	/**
+	 * Advance the PDF's front line by 1
+	 */
+	public void advanceFrontLine() {
+		this.frontLine++;
+	}
+
+	/**
+	 * Regress the PDF's front line by 1
+	 */
+	public void regressFrontLine() {
+		this.frontLine--;	
+	}
+	
+	@Override
+	public String toString() {
+		return "Demand PDF of type " + this.type + " in region " + this.region + " " + probabilityVector.toString() + " (fronlist is " + this.frontLine + ")";
 	}
 }

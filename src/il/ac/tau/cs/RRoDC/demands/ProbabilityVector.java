@@ -45,4 +45,9 @@ public class ProbabilityVector {
 	public double get(int index) {
 		return probabilties.get(index);
 	}
+	
+	@Override
+	public String toString() {
+		return Arrays.toString(probabilties.toArray());
+	}
 }

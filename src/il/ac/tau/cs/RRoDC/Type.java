@@ -28,6 +28,6 @@ public class Type {
 
 	@Override
 	public String toString() {
-		return this.name + " (" + super.toString() + ")";
+		return this.name;
 	}
 }

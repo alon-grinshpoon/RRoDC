@@ -20,6 +20,8 @@ public class DemandComplement extends Function {
 		this.valuesVector = demandCDF.valuesVector.clone();
 		// 1-Complement all values
 		for (int i = 0; i < this.valuesVector.size(); i++){
+			// TODO Add the PDF(i) itself
+			// Summing this entire vector should be the expectancy
 			this.valuesVector.set(i, 1 - this.valuesVector.get(i));
 		}
 	}

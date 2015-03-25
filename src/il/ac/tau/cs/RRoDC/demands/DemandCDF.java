@@ -21,7 +21,6 @@ public class DemandCDF extends Function {
 		// Clone original values
 		this.valuesVector = demandPDF.valuesVector.clone();
 		// Sum values
-		// TODO Change to convolution
 		for (int i = 1; i < this.valuesVector.size(); i++) {
 			this.valuesVector.set(i, this.valuesVector.get(i) + this.valuesVector.get(i - 1));
 		}

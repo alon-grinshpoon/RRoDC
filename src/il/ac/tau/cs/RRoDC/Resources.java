@@ -1,6 +1,6 @@
 package il.ac.tau.cs.RRoDC;
 
-import il.ac.tau.cs.RRoDC.demands.DemandPDF;
+import il.ac.tau.cs.RRoDC.revenues.Rmarginal;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -14,7 +14,7 @@ import java.util.Map;
 public class Resources {
 
 	private int amount;
-	private Map<DemandPDF, List<Resource>> resources = new LinkedHashMap<>();
+	private Map<Rmarginal, List<Resource>> resources = new LinkedHashMap<>();
 
 	/**
 	 * An Inner class representing a single resource
@@ -22,15 +22,15 @@ public class Resources {
 	 */
 	private class Resource {
 		private final int id;
-		private final double probability;
 		private final Type type;
 		private final Region region;
+		private final double marginalRevenue;
 		
-		public Resource(int id, double probability, Type type, Region region) {
+		public Resource(int id, Type type, Region region, double marginalRevenue) {
 			this.id = id;
-			this.probability = probability;
 			this.type = type;
 			this.region = region;
+			this.marginalRevenue = marginalRevenue;
 		}
 		
 		/**
@@ -42,11 +42,11 @@ public class Resources {
 		}
 		
 		/**
-		 * @return The resource's probability
+		 * @return The resource's marginal revenue
 		 */
 		@SuppressWarnings("unused")
-		public double getProbability() {
-			return this.probability;
+		public double getMarginalRevenue() {
+			return this.marginalRevenue;
 		}
 		
 		/**
@@ -82,31 +82,32 @@ public class Resources {
 
 	/**
 	 * Add a new resource the this resources group
-	 * @param PDF The demand PDF representing the resource type 
+	 * @param marginalRevenue The marginal revenue of the resource type 
 	 * @param frontLine The index of the resource to add 
 	 */
-	public void add(DemandPDF PDF, int frontLine) {
-		Resource newResource = new Resource(frontLine, PDF.getProbabilityVector().get(frontLine), PDF.getType(), PDF.getRegion());
-		if (resources.containsKey(PDF)) {
-			resources.get(PDF).add(newResource);
+	public void add(Rmarginal marginalRevenue, int frontLine) {
+		Resource newResource = new Resource(frontLine, marginalRevenue.getType(), marginalRevenue.getRegion(), marginalRevenue.valuesVector.get(frontLine));
+		if (resources.containsKey(marginalRevenue)) {
+			resources.get(marginalRevenue).add(newResource);
 		} else {
 			List<Resource> resourceList = new ArrayList<>();
 			resourceList.add(newResource);
-			resources.put(PDF, resourceList);
+			resources.put(marginalRevenue, resourceList);
 		}
 		// Increment Values
 		this.amount++;
-		PDF.advanceFrontLine();
+		marginalRevenue.advanceFrontLine();
 	}
 	
 	/**
 	 * Print this resources group
 	 */
 	public void print() {
-		for (DemandPDF dPDF : resources.keySet()){
-			System.out.print(dPDF.toString() + ": ");
-			for (Resource resouce : this.resources.get(dPDF)){
-				System.out.print(resouce.probability + ", ");
+		System.out.println(this.toString());
+		for (Rmarginal marginalRevenue : resources.keySet()){
+			System.out.print(marginalRevenue.toString() + ": ");
+			for (Resource resouce : this.resources.get(marginalRevenue)){
+				System.out.print(resouce.marginalRevenue + ", ");
 			}
 			System.out.println();
 		}
@@ -114,7 +115,7 @@ public class Resources {
 	
 	@Override
 	public String toString() {
-		return "This resource group holds "
-				+ this.amount + " resources "+ " (" + super.toString() + ")";
+		return "This resources group holds "
+				+ this.amount + " resources.";
 	}
 }

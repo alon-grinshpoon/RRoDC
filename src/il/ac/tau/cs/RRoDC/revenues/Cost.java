@@ -6,15 +6,15 @@ package il.ac.tau.cs.RRoDC.revenues;
  * @author Alon Grinshpoon
  * 
  */
-public class C {
+public class Cost {
 	
-	public final static int COST_PER_SINGLE_RESOURCE = 1;
+	public final static double COST_PER_SINGLE_RESOURCE = 1;
 	
 	/**
 	 * @return The cost of a single resource
 	 */
-	public static final int getCost(){
-		return C.COST_PER_SINGLE_RESOURCE;
+	public static final double getCost(){
+		return Cost.COST_PER_SINGLE_RESOURCE;
 	}
 
 }

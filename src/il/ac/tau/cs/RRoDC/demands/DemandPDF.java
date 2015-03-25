@@ -1,7 +1,10 @@
 package il.ac.tau.cs.RRoDC.demands;
 
+import il.ac.tau.cs.RRoDC.Function;
 import il.ac.tau.cs.RRoDC.Region;
 import il.ac.tau.cs.RRoDC.Type;
+import il.ac.tau.cs.RRoDC.Utils;
+import il.ac.tau.cs.RRoDC.ValuesVector;
 
 /**
  * A class representing a demand's probability density function
@@ -9,87 +12,47 @@ import il.ac.tau.cs.RRoDC.Type;
  * @author Alon Grinshpoon
  */
 
-public class DemandPDF {
-
-	private final Type type;
-	private final Region region;
-	private ProbabilityVector probabilityVector;
-	private int frontLine = 0;
-
-	public DemandPDF(Type type, Region region, ProbabilityVector probabilityVector) {
-		this.type = type;
-		this.region = region;
-		this.probabilityVector = probabilityVector;
-	}
+public class DemandPDF extends Function {
 
 	/**
-	 * @return The resources' type
+	 * Construct a demand PDF and validate probabilities
+	 * @param demandCDF The original CDF
 	 */
-	public Type getType() {
-		return type;
+	public DemandPDF(Type type, Region region, ValuesVector probabilityVector) {
+		super(type, region);
+		this.valuesVector = probabilityVector;
+		
+		// Verify values
+		double sum = 0;
+		for (double value : this.valuesVector){
+			if (Math.abs(value) > 1 || Math.abs(value) < 0){
+				Utils.ErrorAndExit("Given an invalid probability value. All probabilities must be between 0 and 1.");
+			}
+			sum += value;
+		}
+		if (sum != 1.0){
+			Utils.ErrorAndExit("All probabilities must sum up to 1.");
+		}
 	}
 
 	/**
-	 * @return The resources' region
-	 */
-	public Region getRegion() {
-		return region;
-	}
-
-	/**
-	 * Set the resources' demand vector
+	 * Set the resources' demand probability vector
 	 * 
 	 * @param demandVector
 	 */
-	public void setDemandVector(ProbabilityVector probabilityVector) {
-		this.probabilityVector = probabilityVector;
+	public void setProbabilityVector(ValuesVector probabilityVector) {
+		this.valuesVector = probabilityVector;
 	}
 
 	/**
-	 * @return The resources' probability vector
+	 * @return The resources' demand probabilities vector
 	 */
-	public ProbabilityVector getProbabilityVector() {
-		return probabilityVector;
-	}
-
-	/**
-	 * Set the index front line in the PDF's probability vector
-	 * @param frontLine
-	 */
-	public void setFrontLine(int frontLine) {
-		this.frontLine = frontLine;
-	}
-
-	/**
-	 * @return The index of the front line in the PDF's probability vector
-	 */
-	public int getFrontLine() {
-		return this.frontLine;
-	}
-	
-	/**
-	 * @return The value that is at the front line of the PDF
-	 */
-	public double getFrontlineValue() {
-		return this.getProbabilityVector().get(frontLine);
-	}
-
-	/**
-	 * Advance the PDF's front line by 1
-	 */
-	public void advanceFrontLine() {
-		this.frontLine++;
-	}
-
-	/**
-	 * Regress the PDF's front line by 1
-	 */
-	public void regressFrontLine() {
-		this.frontLine--;	
+	public ValuesVector getProbabilityVector() {
+		return valuesVector;
 	}
 	
 	@Override
 	public String toString() {
-		return "Demand PDF of type " + this.type + " in region " + this.region + " " + probabilityVector.toString() + " (fronlist is " + this.frontLine + ")";
+		return "Demand PDF of type " + this.getType() + " in region " + this.getRegion() + " is " + valuesVector.toString();
 	}
 }

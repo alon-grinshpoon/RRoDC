@@ -8,17 +8,28 @@ package il.ac.tau.cs.RRoDC.revenues;
  */
 public class Rloc {
 
-	private int localRevenue;
+	private double localRevenue;
 
-	public Rloc(int localRevenue) {
+	/**
+	 * Construct a local revenue
+	 * @param localRevenue A double that represents the value of the local revenue
+	 */
+	public Rloc(double localRevenue) {
 		setLocalRevenue(localRevenue);
 	}
 
-	public int getLocalRevenue() {
+	/**
+	 * @return The local revenue of a resource
+	 */
+	public double getLocalRevenue() {
 		return localRevenue;
 	}
 
-	public void setLocalRevenue(int localRevenue) {
+	/**
+	 * Set the local revenue of a resource
+	 * @param localRevenue The local revenue of a resource
+	 */
+	public void setLocalRevenue(double localRevenue) {
 		this.localRevenue = localRevenue;
 	}
 }

@@ -38,7 +38,7 @@ public class Region {
 	}
 
 	/**
-	 * Set the local revenue fot the region
+	 * Set the local revenue for the region
 	 * 
 	 * @param localRevenue
 	 */
@@ -48,7 +48,7 @@ public class Region {
 
 	@Override
 	public String toString() {
-		return this.name;
+		return getName();
 	}
 
 }

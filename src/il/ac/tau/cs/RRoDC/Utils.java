@@ -1,13 +1,13 @@
 package il.ac.tau.cs.RRoDC;
 
-import il.ac.tau.cs.RRoDC.demands.DemandPDF;
+import il.ac.tau.cs.RRoDC.revenues.Rmarginal;
 
 public class Utils {
 
-	public static boolean allFrontLinesAreNegative(DemandPDF... dPDFs) {
+	public static boolean allFrontLinesAreNegative(Rmarginal... marginalRevenues) {
 		boolean allFrontLinesAreNegative = true;
-		for (DemandPDF dPDF : dPDFs) {
-			if (dPDF.getFrontlineValue() > 0) {
+		for (Rmarginal marginalRevenue : marginalRevenues) {
+			if (marginalRevenue.getFrontlineValue() > 0) {
 				allFrontLinesAreNegative = false;
 				break;
 			}

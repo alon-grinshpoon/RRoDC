@@ -106,13 +106,12 @@ public class Resources {
 	 * Print this resources group
 	 */
 	public void print() {
-		System.out.println(this.toString());
 		for (Rmarginal marginalRevenue : resources.keySet()){
-			System.out.print(marginalRevenue.toString() + ": ");
+			Utils.print(marginalRevenue.toString() + ": ");
 			for (Resource resouce : this.resources.get(marginalRevenue)){
-				System.out.print(resouce.marginalRevenue + ", ");
+				Utils.print(resouce.marginalRevenue + ", ");
 			}
-			System.out.println();
+			Utils.println();
 		}
 	}
 	

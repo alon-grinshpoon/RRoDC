@@ -1,6 +1,7 @@
 package il.ac.tau.cs.RRoDC.problems;
 
 import il.ac.tau.cs.RRoDC.Resources;
+import il.ac.tau.cs.RRoDC.Utils;
 
 /**
  * A class representing a solution to a problem.
@@ -74,10 +75,9 @@ public class Solution {
 	 * Outputs the solution to the user's screen
 	 */
 	public void print(){
-		System.out.println("========= Problem Solved! =========");
-		System.out.println("The number of resources will be " + this.numberOfResources + ".");
-		System.out.println("The total revenue will be " + this.revenue + ".");
-		System.out.println("===================================");
+		Utils.println("========= Problem Solved! =========");
+		Utils.println("The number of resources will be " + this.numberOfResources + ".");
+		Utils.println("The total revenue will be " + this.revenue + ".");
 	}
 	
 	
@@ -88,8 +88,8 @@ public class Solution {
 		// Print
 		print();
 		// Print resources state
+		Utils.println("Marginal revenue vectors and chosen resources are:");
 		resources.print();
-		System.out.println("===================================");
 	}
 
 }

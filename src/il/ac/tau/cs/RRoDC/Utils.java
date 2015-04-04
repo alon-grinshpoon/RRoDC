@@ -21,7 +21,7 @@ public class Utils {
 	public static boolean allFrontLinesAreNegative(List<Rmarginal> marginalRevenues) {
 		boolean allFrontLinesAreNegative = true;
 		for (Rmarginal marginalRevenue : marginalRevenues) {
-			if (!marginalRevenue.isExhausted() && marginalRevenue.getFrontlineValue() > 0) {
+			if (!marginalRevenue.isExhausted() && marginalRevenue.getFrontlineValue() >= 0) {
 				allFrontLinesAreNegative = false;
 				break;
 			}
@@ -37,5 +37,72 @@ public class Utils {
 		System.err.println("[ERROR] " + message);
 		System.exit(1);
 	}
-
+	
+	/**
+	 * Print a message to the user's screen.
+	 * @param message The message that will be shown
+	 */
+	public static void println(String message){
+		System.out.println(message);
+	}
+	
+	/**
+	 * Print a blank message to the user's screen.
+	 */
+	public static void println(){
+		println("");
+	}
+	
+	/**
+	 * Print a message to the user's screen.
+	 * @param message The message that will be shown
+	 */
+	public static void print(String message){
+		System.out.print(message);
+	}
+	
+	/**
+	 * Print a blank message to the user's screen.
+	 */
+	public static void print(){
+		print("");
+	}
+	
+	/**
+	 * Print a message to the user's screen if debug mode is enabled.
+	 * @param message The message that will be shown
+	 */
+	public static void DEBUG_println(String message){
+		if (Main.DEBUG_MODE){
+			System.out.println(message);
+		}
+	}
+	
+	/**
+	 * Print a blank message to the user's screen if debug mode is enabled.
+	 */
+	public static void DEBUG_println(){
+		if (Main.DEBUG_MODE){
+			println("");
+		}
+	}
+	
+	/**
+	 * Print a message to the user's screen if debug mode is enabled.
+	 * @param message The message that will be shown
+	 */
+	public static void DEBUG_print(String message){
+		if (Main.DEBUG_MODE){
+			System.out.print(message);
+		}
+	}
+	
+	/**
+	 * Print a blank message to the user's screen if debug mode is enabled.
+	 */
+	public static void DEBUG_print(){
+		if (Main.DEBUG_MODE){
+			print("");
+		}
+	}
 }

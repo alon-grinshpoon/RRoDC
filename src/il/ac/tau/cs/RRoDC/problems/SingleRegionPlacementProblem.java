@@ -40,8 +40,11 @@ public class SingleRegionPlacementProblem implements Problem {
 	 * @param pathToInputFiles A path to the inputs files
 	 */
 	public SingleRegionPlacementProblem(String pathToInputFiles) {
+		Utils.DEBUG_println("-> Starting a new Single Region Placement Problem...!");
 		this.pathToInputFiles = pathToInputFiles;
+		Utils.DEBUG_println("-> Getting user input from files..");
 		getInput();
+		Utils.DEBUG_println("-> Got user input!");
 	}
 
 	/**
@@ -60,7 +63,8 @@ public class SingleRegionPlacementProblem implements Problem {
                     Charset.defaultCharset());
            // Set Cost
            Cost.setCost(Double.parseDouble(lines.get(0)));
-           
+           // Print Cost
+           Utils.DEBUG_println("--> Cost is " + Cost.getCost());
            /*
             * Region and local revenue
             */
@@ -71,7 +75,8 @@ public class SingleRegionPlacementProblem implements Problem {
            String regionName = lines.get(0).split(",")[0].trim();
            int localRevenue = Integer.parseInt(lines.get(0).split(",")[1].trim());
            region = new Region(regionName, new Rloc(localRevenue));
-           
+           // Print Region and local revenue
+           Utils.DEBUG_println("--> Region is " + region.getName() + " and local revenue is " + region.getLocalRevenue().getLocalRevenue());
            /*
             * Demand Probability Vectors
             */
@@ -103,8 +108,15 @@ public class SingleRegionPlacementProblem implements Problem {
         	   // Create the types' marginal revenue vectors
         	   marginalRevenues[index] = new Rmarginal(region.getLocalRevenue(), demandComplements[index]);
         	   // Advance index
-        	   index++;       	   
+        	   index++;
            }
+           // Print Arrays
+           Utils.DEBUG_println("--> Values Vectors are: " + Arrays.toString(valuesVectors));
+           Utils.DEBUG_println("--> Demand PDFs are: " + Arrays.toString(demandPDFs));
+           Utils.DEBUG_println("--> Demand CDFs are: " + Arrays.toString(demandCDFs));
+           Utils.DEBUG_println("--> Demand Complements are: " + Arrays.toString(demandComplements));
+           Utils.DEBUG_println("--> Marginal Revenues are: " + Arrays.toString(marginalRevenues));
+           
            // Store marginal revenues
            this.marginalRevenues = new ArrayList<Rmarginal>(Arrays.asList(marginalRevenues));
            
@@ -134,7 +146,7 @@ public class SingleRegionPlacementProblem implements Problem {
 		while(resources.getAmount() < Main.AVAILABLE_RESOURCES && !Utils.allFrontLinesAreNegative(marginalRevenues)){
 			// GREEDY: add the resource who have highest value of the demand marginal revenue. Always on FRONT LINE
 			// Search for the right resource
-			double max = Double.MIN_VALUE;
+			double max = Double.NEGATIVE_INFINITY;
 			Rmarginal maxMarginalRevenue = null; 
 			for (Rmarginal marginalRevenue : marginalRevenues){
 				if (!marginalRevenue.isExhausted() && marginalRevenue.getFrontlineValue() > max){

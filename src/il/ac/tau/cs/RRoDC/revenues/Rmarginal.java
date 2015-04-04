@@ -68,4 +68,17 @@ public class Rmarginal extends Function {
 	public boolean isExhausted() {
 		return this.frontLine >= this.valuesVector.size();
 	}
+	
+	/**
+	 * @return True if the front line is at the start of the vector.
+	 * Meaning all values of this marginal revenue vector were yet to be chosen
+	 */
+	public boolean isUnutilized() {
+		return this.frontLine == 0;
+	}
+	
+	@Override
+	public String toString() {
+		return super.toString() + " (frontline: " + this.frontLine + ")";
+	}
 }

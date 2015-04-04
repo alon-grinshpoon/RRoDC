@@ -84,7 +84,7 @@ public class Resources {
 	}
 
 	/**
-	 * Add a new resource the this resources group
+	 * Add a new resource to this resources group
 	 * @param marginalRevenue The marginal revenue of the resource type 
 	 * @param frontLine The index of the resource to add 
 	 */
@@ -100,6 +100,20 @@ public class Resources {
 		// Increment Values
 		this.amount++;
 		marginalRevenue.advanceFrontLine();
+	}
+	
+	/**
+	 * Remove an existing resource from this resources group
+	 * @param marginalRevenue The marginal revenue of the resource type 
+	 * @param frontLine The index of the resource to remove 
+	 */
+	public void remove(Rmarginal marginalRevenue, int frontLine) {
+		
+		resources.get(marginalRevenue).remove(frontLine - 1);
+
+		// Decrement Values
+		this.amount--;
+		marginalRevenue.regressFrontLine();
 	}
 	
 	/**

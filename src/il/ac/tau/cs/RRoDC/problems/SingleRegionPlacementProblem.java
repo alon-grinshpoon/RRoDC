@@ -33,7 +33,7 @@ public class SingleRegionPlacementProblem implements Problem {
 	
 	private Region region;
 	private int numberOfTypes;
-	List<Rmarginal> marginalRevenues;
+	private List<Rmarginal> marginalRevenues;
 
 	/**
 	 * Construct a new Single Region Placement Problem
@@ -128,17 +128,20 @@ public class SingleRegionPlacementProblem implements Problem {
 	
 	@Override
 	public Solution solve() {
-
-		///////// Hijack marginal revenue vectors /////////
-		//marginalRevenues.get(0).valuesVector = new ValuesVector(1.0, 0.8, 0.4, -0.9);
-		//marginalRevenues.get(1).valuesVector = new ValuesVector(0.9, 0.7, 0.5, 0.4);
-		//marginalRevenues.get(2).valuesVector = new ValuesVector(0.7, 0.6, 0.2, -0.1);
-		//marginalRevenues.get(3).valuesVector = new ValuesVector(0.55, 0.1, -0.1, 0.0);
-		//////////////////////////////////////////////////
 		
+		if (Main.HIJACK){
+			///////// Hijack marginal revenue vectors /////////
+	        this.marginalRevenues.get(0).valuesVector = new ValuesVector(1.0, 0.8, 0.4, -0.9);
+	        this.marginalRevenues.get(1).valuesVector = new ValuesVector(0.9, 0.7, 0.5, 0.4);
+	        this.marginalRevenues.get(2).valuesVector = new ValuesVector(0.7, 0.6, 0.2, -0.1);
+	        this.marginalRevenues.get(3).valuesVector = new ValuesVector(0.55, 0.1, -0.1, 0.0);
+	        //////////////////////////////////////////////////
+		}
+        
 		/*
 		 * Run greedy algorithm for optimal resource placement
 		 */
+		
 		Resources resources = new Resources();
 		
 		// If number of resources limited: stop when you finish resources.
@@ -168,6 +171,27 @@ public class SingleRegionPlacementProblem implements Problem {
 		
 		// Output solution
 		return new Solution(resources, revenue);
+	}
+	
+	/**
+	 * @return The region of this single region problem.
+	 */
+	public Region getRegion() {
+		return this.region;
+	}
+
+	/**
+	 * @return The number of types in this single region problem.
+	 */
+	public int getNumberOfTypes() {
+		return this.numberOfTypes;
+	}
+
+	/**
+	 * @return A list of the marginal revenue vectors of this  single region problem.
+	 */
+	public List<Rmarginal> getMarginalRevenues() {
+		return this.marginalRevenues;
 	}
 
 }

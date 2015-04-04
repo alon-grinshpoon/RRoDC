@@ -11,10 +11,11 @@ public class Utils {
 	 */
 	public final static String COST_FILENAME = "/c.txt";
 	public final static String DEMANDS_FILENAME = "/d.txt";
+	public final static String NEW_DEMANDS_FILENAME = "/d_new.txt";
 	public final static String LOCAL_REVENUES_FILENAME = "/Rloc.txt";
+	public final static String REPOSITION_CONSTRAINT_FILENAME = "/reposition_constraint.txt";	
 	
 	/**
-	 * 
 	 * @param marginalRevenues A list of marginal revenue vectors
 	 * @return True is all front lines in the marginal revenue vectors point to negative values
 	 */
@@ -27,6 +28,25 @@ public class Utils {
 			}
 		}
 		return allFrontLinesAreNegative;
+	}
+	
+	/**
+	 * @param marginalRevenues A list of marginal revenue vectors
+	 * @return True is all front lines in the marginal revenue vectors have no attractive elements around (positive on right, negative on left).
+	 */
+	public static boolean allFrontLinesAreUnattractive(List<Rmarginal> marginalRevenues) {
+		boolean allFrontLinesAreUnattractive = true;
+		for (Rmarginal marginalRevenue : marginalRevenues) {
+			if ((!marginalRevenue.isExhausted() && marginalRevenue.getFrontlineValue() >= 0)) {
+				allFrontLinesAreUnattractive = false;
+				break;
+			}
+			if ((!marginalRevenue.isUnutilized() && marginalRevenue.get(marginalRevenue.getFrontLine() - 1) < 0)) {
+				allFrontLinesAreUnattractive = false;
+				break;
+			}
+		}
+		return allFrontLinesAreUnattractive;
 	}
 
 	/**

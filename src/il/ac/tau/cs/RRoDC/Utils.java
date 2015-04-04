@@ -7,7 +7,7 @@ public class Utils {
 	public static boolean allFrontLinesAreNegative(Rmarginal... marginalRevenues) {
 		boolean allFrontLinesAreNegative = true;
 		for (Rmarginal marginalRevenue : marginalRevenues) {
-			if (marginalRevenue.getFrontlineValue() > 0) {
+			if (!marginalRevenue.isExhausted() && marginalRevenue.getFrontlineValue() > 0) {
 				allFrontLinesAreNegative = false;
 				break;
 			}

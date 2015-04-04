@@ -20,7 +20,7 @@ public class Resources {
 	 * An Inner class representing a single resource
 	 * @author Alon Grinshpoon
 	 */
-	private class Resource {
+	public class Resource {
 		private final int id;
 		private final Type type;
 		private final Region region;
@@ -36,7 +36,6 @@ public class Resources {
 		/**
 		 * @return The resource's id
 		 */
-		@SuppressWarnings("unused")
 		public int getID() {
 			return this.id;
 		}
@@ -44,7 +43,6 @@ public class Resources {
 		/**
 		 * @return The resource's marginal revenue
 		 */
-		@SuppressWarnings("unused")
 		public double getMarginalRevenue() {
 			return this.marginalRevenue;
 		}
@@ -52,7 +50,6 @@ public class Resources {
 		/**
 		 * @return The resource's type
 		 */
-		@SuppressWarnings("unused")
 		public Type getType() {
 			return this.type;
 		}
@@ -60,7 +57,6 @@ public class Resources {
 		/**
 		 * @return The resource's region
 		 */
-		@SuppressWarnings("unused")
 		public Region getRegion() {
 			return this.region;
 		}
@@ -78,6 +74,13 @@ public class Resources {
 	 */
 	public int getAmount() {
 		return this.amount;
+	}
+
+	/**
+	 * @return The chosen resources
+	 */
+	public Map<Rmarginal, List<Resource>> getChosenResources() {
+		return this.resources;
 	}
 
 	/**

@@ -60,4 +60,12 @@ public class Rmarginal extends Function {
 	public void regressFrontLine() {
 		this.frontLine--;
 	}
+
+	/**
+	 * @return True if the front line reached the end of the vector.
+	 * Meaning all values of this marginal revenue vector were chosen
+	 */
+	public boolean isExhausted() {
+		return this.frontLine >= this.valuesVector.size();
+	}
 }

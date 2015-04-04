@@ -13,7 +13,7 @@ public class Utils {
 	public final static String DEMANDS_FILENAME = "/d.txt";
 	public final static String NEW_DEMANDS_FILENAME = "/d_new.txt";
 	public final static String LOCAL_REVENUES_FILENAME = "/Rloc.txt";
-	public final static String REPOSITION_CONSTRAINT_FILENAME = "/reposition_constraint.txt";	
+	public final static String CONSTRAINT_FILENAME = "/constraint.txt";	
 	
 	/**
 	 * @param marginalRevenues A list of marginal revenue vectors

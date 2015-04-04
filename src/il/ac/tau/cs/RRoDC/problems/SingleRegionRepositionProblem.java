@@ -80,7 +80,7 @@ public class SingleRegionRepositionProblem implements Problem {
 			 */
 			// Get Reposition Constraint
 			lines = Files.readAllLines(
-					Paths.get(pathToInputFiles + Utils.REPOSITION_CONSTRAINT_FILENAME),
+					Paths.get(pathToInputFiles + Utils.CONSTRAINT_FILENAME),
 					Charset.defaultCharset());
 			// Set Reposition Constraint
 			this.repositionConstraint = Integer.parseInt(lines.get(0));

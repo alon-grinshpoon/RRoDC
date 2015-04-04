@@ -1,9 +1,14 @@
 package il.ac.tau.cs.RRoDC;
 
+import il.ac.tau.cs.RRoDC.problems.Problem;
 import il.ac.tau.cs.RRoDC.problems.SingleRegionPlacementProblem;
 import il.ac.tau.cs.RRoDC.problems.SingleRegionRepositionProblem;
 import il.ac.tau.cs.RRoDC.problems.Solution;
 
+/**
+ * The main running class
+ * @author Alon Grinshpoon
+ */
 public class Main {
 
 	/*
@@ -20,12 +25,12 @@ public class Main {
 		 */
 		
 		// Optimal Resource Placement
-		//SingleRegionPlacementProblem singleRegionPlacementProblem = new SingleRegionPlacementProblem("C:/Users/Alon/OneDrive/Documents/לימודים/פרוייקטים/Cloud Research/Inputs/1. SingleRegionPlacementProblem/");
-		//Solution placementProblemSolution = singleRegionPlacementProblem.solve();
-		//placementProblemSolution.printAll();
+		Problem singleRegionPlacementProblem = new SingleRegionPlacementProblem("C:/Users/Alon/OneDrive/Documents/לימודים/פרוייקטים/Cloud Research/Inputs/1. SingleRegionPlacementProblem/");
+		Solution placementProblemSolution = singleRegionPlacementProblem.solve();
+		placementProblemSolution.printAll();
 		
 		// Optimal Resource Reposition Under Reposition Constraint
-		SingleRegionRepositionProblem SingleRegionRepositionProblem = new SingleRegionRepositionProblem("C:/Users/Alon/OneDrive/Documents/לימודים/פרוייקטים/Cloud Research/Inputs/2. SingleRegionRepositionProblem/");
+		Problem SingleRegionRepositionProblem = new SingleRegionRepositionProblem("C:/Users/Alon/OneDrive/Documents/לימודים/פרוייקטים/Cloud Research/Inputs/2. SingleRegionRepositionProblem/");
 		Solution repositionProblemSolution = SingleRegionRepositionProblem.solve();
 		repositionProblemSolution.printAll();
 	}

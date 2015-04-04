@@ -7,6 +7,11 @@ package il.ac.tau.cs.RRoDC.problems;
 public interface Problem {
 
 	/**
+	 * Get user input
+	 */
+	public void getInput();
+	
+	/**
 	 * Solves the defined problem.
 	 * @return The solution to the problem
 	 */

@@ -24,7 +24,7 @@ public class Solution {
 		this.revenue = revenue;
 		this.resources = resources;
 	}
-	
+
 	/**
 	 * @return The number of resources chosen
 	 */
@@ -53,6 +53,21 @@ public class Solution {
 	 */
 	public void setRevenue(double revenue) {
 		this.revenue = revenue;
+	}
+	
+	/**
+	 * @return The resources chosen in the solution
+	 */
+	public Resources getResources() {
+		return resources;
+	}
+
+	/**
+	 * Set the resources chosen in the solution
+	 * @param resources
+	 */
+	public void setResources(Resources resources) {
+		this.resources = resources;
 	}
 	
 	/**

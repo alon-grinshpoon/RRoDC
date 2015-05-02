@@ -3,7 +3,7 @@ package il.ac.tau.cs.RRoDC.revenues;
 import il.ac.tau.cs.RRoDC.Function;
 import il.ac.tau.cs.RRoDC.demands.DemandComplement;
 
-public class Rmarginal extends Function {
+public abstract class Rmarginal extends Function {
 
 	private int frontLine = 0;
 
@@ -17,12 +17,16 @@ public class Rmarginal extends Function {
 		// Clone original values
 		this.valuesVector = demandComplement.valuesVector.clone();
 		// Compute marginal revenue for all values
-		for (int i = 0; i < demandComplement.size(); i++){
-			// Use the definition of marginal revenue
-			double marginalRevenue = localRevenue.getLocalRevenue() * demandComplement.get(i) - Cost.getCost();
-			this.valuesVector.set(i, marginalRevenue);
-		}
+		computeMerginalRevenue(localRevenue, demandComplement);
 	}
+	
+	/**
+	 * Compute and set the right marginal revenue for the problem. Need to be implemented for every problem individually.
+	 * This requires to extend this class to specific marginal revenue classes.
+	 * @param localRevenue
+	 * @param demandComplement
+	 */
+	public abstract void computeMerginalRevenue(Rloc localRevenue, DemandComplement demandComplement);
 	
 	/**
 	 * Set the index front line in the values vector

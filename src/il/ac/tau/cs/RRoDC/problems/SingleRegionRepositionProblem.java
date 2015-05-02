@@ -12,6 +12,7 @@ import il.ac.tau.cs.RRoDC.demands.DemandComplement;
 import il.ac.tau.cs.RRoDC.demands.DemandPDF;
 import il.ac.tau.cs.RRoDC.revenues.Cost;
 import il.ac.tau.cs.RRoDC.revenues.Rmarginal;
+import il.ac.tau.cs.RRoDC.revenues.RmarginalForSingleProblems;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -85,7 +86,7 @@ public class SingleRegionRepositionProblem implements Problem {
 			// Set Reposition Constraint
 			this.repositionConstraint = Integer.parseInt(lines.get(0));
 			// Print Reposition Constraint
-			Utils.DEBUG_println("--> Reposition Constraint is "	+ Cost.getCost());
+			Utils.DEBUG_println("--> Reposition Constraint is "	+ this.repositionConstraint);
 
 			/*
 			 * New Demand Probability Vectors
@@ -119,7 +120,7 @@ public class SingleRegionRepositionProblem implements Problem {
 				// Create the types' demand complement CDFs
 				demandComplements[index] = new DemandComplement(demandCDFs[index]);
 				// Create the types' marginal revenue vectors
-				marginalRevenues[index] = new Rmarginal(region.getLocalRevenue(), demandComplements[index]);
+				marginalRevenues[index] = new RmarginalForSingleProblems(region.getLocalRevenue(), demandComplements[index]);
 				// Advance index
 				index++;
 			}
@@ -147,7 +148,7 @@ public class SingleRegionRepositionProblem implements Problem {
 		 */
 		Solution prevSolution = prevProblem.solve();
 		
-		// Update marginal revenues vectors
+		// Update marginal revenues vectors to hold the same front lines as the previous problem solution
 		for (int i = 0; i < this.numberOfTypes; i++){
 			this.marginalRevenues.get(i).setFrontLine(prevProblem.getMarginalRevenues().get(i).getFrontLine());
 		}

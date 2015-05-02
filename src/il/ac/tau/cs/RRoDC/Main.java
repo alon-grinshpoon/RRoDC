@@ -29,6 +29,8 @@ public class Main {
 		Solution placementProblemSolution = singleRegionPlacementProblem.solve();
 		placementProblemSolution.printAll();
 		
+		System.out.println();
+		
 		// Optimal Resource Reposition Under Reposition Constraint
 		Problem SingleRegionRepositionProblem = new SingleRegionRepositionProblem("C:/Users/Alon/OneDrive/Documents/לימודים/פרוייקטים/Cloud Research/Inputs/2. SingleRegionRepositionProblem/");
 		Solution repositionProblemSolution = SingleRegionRepositionProblem.solve();

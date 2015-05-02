@@ -13,6 +13,7 @@ import il.ac.tau.cs.RRoDC.demands.DemandPDF;
 import il.ac.tau.cs.RRoDC.revenues.Cost;
 import il.ac.tau.cs.RRoDC.revenues.Rloc;
 import il.ac.tau.cs.RRoDC.revenues.Rmarginal;
+import il.ac.tau.cs.RRoDC.revenues.RmarginalForSingleProblems;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -59,7 +60,7 @@ public class SingleRegionPlacementProblem implements Problem {
 			 * Cost
 			 */
 			// Get Cost
-            lines = Files.readAllLines(Paths.get(pathToInputFiles + Utils.COST_FILENAME),
+           lines = Files.readAllLines(Paths.get(pathToInputFiles + Utils.COST_FILENAME),
                     Charset.defaultCharset());
            // Set Cost
            Cost.setCost(Double.parseDouble(lines.get(0)));
@@ -106,7 +107,7 @@ public class SingleRegionPlacementProblem implements Problem {
         	   // Create the types' demand complement CDFs
         	   demandComplements[index] = new DemandComplement(demandCDFs[index]);
         	   // Create the types' marginal revenue vectors
-        	   marginalRevenues[index] = new Rmarginal(region.getLocalRevenue(), demandComplements[index]);
+        	   marginalRevenues[index] = new RmarginalForSingleProblems(region.getLocalRevenue(), demandComplements[index]);
         	   // Advance index
         	   index++;
            }
@@ -188,7 +189,7 @@ public class SingleRegionPlacementProblem implements Problem {
 	}
 
 	/**
-	 * @return A list of the marginal revenue vectors of this  single region problem.
+	 * @return A list of the marginal revenue vectors of this single region problem.
 	 */
 	public List<Rmarginal> getMarginalRevenues() {
 		return this.marginalRevenues;

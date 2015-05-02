@@ -11,8 +11,11 @@ import il.ac.tau.cs.RRoDC.demands.DemandCDF;
 import il.ac.tau.cs.RRoDC.demands.DemandComplement;
 import il.ac.tau.cs.RRoDC.demands.DemandPDF;
 import il.ac.tau.cs.RRoDC.revenues.Cost;
+import il.ac.tau.cs.RRoDC.revenues.Rglo;
 import il.ac.tau.cs.RRoDC.revenues.Rloc;
 import il.ac.tau.cs.RRoDC.revenues.Rmarginal;
+import il.ac.tau.cs.RRoDC.revenues.RmarginalForMultiProblemsAdd;
+import il.ac.tau.cs.RRoDC.revenues.RmarginalForMultiProblemsRemove;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -24,20 +27,26 @@ import java.util.List;
 
 /**
  * A class representing the multiple regions optimal resource placement problem
- * multiple regions and a single type of service. 
+ * multiple regions and a single type of service.
+ * 
  * @author Alon Grinshpoon
  */
 public class MultiRegionPlacementProblem implements Problem {
-	
+
 	private String pathToInputFiles;
-	
-	private Region region;
-	private int numberOfTypes;
-	private List<Rmarginal> marginalRevenues;
+
+	private Type type;
+	private int numberOfRegions;
+	private Region[] regions;
+	private List<Rmarginal> marginalRevenuesAdd;
+	private List<Rmarginal> marginalRevenuesRemove;
+	private int repositionConstraint;
 
 	/**
 	 * Construct a new Multi-Region Placement Problem
-	 * @param pathToInputFiles A path to the inputs files
+	 * 
+	 * @param pathToInputFiles
+	 *            A path to the inputs files
 	 */
 	public MultiRegionPlacementProblem(String pathToInputFiles) {
 		Utils.DEBUG_println("-> Starting a new Multi-Region Placement Problem...!");
@@ -54,105 +63,173 @@ public class MultiRegionPlacementProblem implements Problem {
 	public void getInput() {
 		try {
 			List<String> lines;
-			
+
 			/*
 			 * Cost
 			 */
 			// Get Cost
-            lines = Files.readAllLines(Paths.get(pathToInputFiles + Utils.COST_FILENAME),
-                    Charset.defaultCharset());
-           // Set Cost
-           Cost.setCost(Double.parseDouble(lines.get(0)));
-           // Print Cost
-           Utils.DEBUG_println("--> Cost is " + Cost.getCost());
-           /*
-            * Region and local revenue
-            */
-           // Get Region and local revenue
-           lines = Files.readAllLines(Paths.get(pathToInputFiles + Utils.LOCAL_REVENUES_FILENAME),
-                   Charset.defaultCharset());
-           // Set Region and local revenue
-           String regionName = lines.get(0).split(",")[0].trim();
-           int localRevenue = Integer.parseInt(lines.get(0).split(",")[1].trim());
-           region = new Region(regionName, new Rloc(localRevenue));
-           // Print Region and local revenue
-           Utils.DEBUG_println("--> Region is " + region.getName() + " and local revenue is " + region.getLocalRevenue().getLocalRevenue());
-           /*
-            * Demand Probability Vectors
-            */
-           // Get Demands
-           lines = Files.readAllLines(Paths.get(pathToInputFiles + Utils.DEMANDS_FILENAME),
-                   Charset.defaultCharset());
-           // Set Demands
-           int index = 0;
-           numberOfTypes = lines.size();
-           List<Double> values;
-           ValuesVector[] valuesVectors = new ValuesVector[numberOfTypes];
-           DemandPDF[] demandPDFs = new DemandPDF[numberOfTypes];
-           DemandCDF[] demandCDFs = new DemandCDF[numberOfTypes];
-           DemandComplement[] demandComplements = new DemandComplement[numberOfTypes];
-           Rmarginal[] marginalRevenues = new Rmarginal[numberOfTypes];
-           for (String line : lines){
-        	   // Create the types' probability vector
-        	   values = new ArrayList<Double>();
-        	   for (String value : line.split(",")){
-        		   values.add(Double.parseDouble(value.trim()));
-        	   }
-        	   valuesVectors[index] = new ValuesVector(values);
-        	   // Create the types' demand PDFs
-        	   demandPDFs[index] = new DemandPDF(new Type(String.valueOf(index)), region, valuesVectors[index]);
-        	   // Create the types' demand CDFs
-        	   demandCDFs[index] = new DemandCDF(demandPDFs[index]);
-        	   // Create the types' demand complement CDFs
-        	   demandComplements[index] = new DemandComplement(demandCDFs[index]);
-        	   // Create the types' marginal revenue vectors
-        	   marginalRevenues[index] = new Rmarginal(region.getLocalRevenue(), demandComplements[index]);
-        	   // Advance index
-        	   index++;
-           }
-           // Print Arrays
-           Utils.DEBUG_println("--> Values Vectors are: " + Arrays.toString(valuesVectors));
-           Utils.DEBUG_println("--> Demand PDFs are: " + Arrays.toString(demandPDFs));
-           Utils.DEBUG_println("--> Demand CDFs are: " + Arrays.toString(demandCDFs));
-           Utils.DEBUG_println("--> Demand Complements are: " + Arrays.toString(demandComplements));
-           Utils.DEBUG_println("--> Marginal Revenues are: " + Arrays.toString(marginalRevenues));
-           
-           // Store marginal revenues
-           this.marginalRevenues = new ArrayList<Rmarginal>(Arrays.asList(marginalRevenues));
-           
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+			lines = Files.readAllLines(Paths.get(pathToInputFiles + Utils.COST_FILENAME), Charset.defaultCharset());
+			// Set Cost
+			Cost.setCost(Double.parseDouble(lines.get(0)));
+			// Print Cost
+			Utils.DEBUG_println("--> Cost is " + Cost.getCost());
+			
+			/*
+			 * Type
+			 */
+			// Get Type
+			lines = Files.readAllLines(Paths.get(pathToInputFiles + Utils.TYPE_FILENAME), Charset.defaultCharset());
+			// Set Type
+			type = new Type(lines.get(0));
+			// Print Type
+			Utils.DEBUG_println("--> Type is " + type);
+			
+			/*
+			 * Reposition Constraint
+			 */
+			// Get Reposition Constraint
+			lines = Files.readAllLines(Paths.get(pathToInputFiles + Utils.CONSTRAINT_FILENAME), Charset.defaultCharset());
+			// Set Reposition Constraint
+			this.repositionConstraint = Integer.parseInt(lines.get(0));
+			// Print Reposition Constraint
+			Utils.DEBUG_println("--> Reposition Constraint is " + this.repositionConstraint);
+			
+			/*
+			 * Regions and local revenue
+			 */
+			// Get Regions and local revenue
+			lines = Files.readAllLines(Paths.get(pathToInputFiles + Utils.LOCAL_REVENUES_FILENAME), Charset.defaultCharset());
+			// Set Region and local revenue
+			int index = 0;
+			numberOfRegions = lines.size();
+			regions = new Region[numberOfRegions];
+			for (String line : lines) {
+				String regionName = line.split(",")[0].trim();
+				int localRevenue = Integer.parseInt(line.split(",")[1].trim());
+				regions[index] = new Region(regionName, new Rloc(localRevenue));
+				index++;
+			}
+			// Print Region and local revenue
+			Utils.DEBUG_println("--> Regions are:");
+			for (Region region : regions) {
+				Utils.DEBUG_println("---> " + region.getName() + " with a local revenue of " + region.getLocalRevenue().getLocalRevenue());
+			}
+			
+			/*
+			 * Global Revenue
+			 */
+			// Get Global Revenue
+			lines = Files.readAllLines(Paths.get(pathToInputFiles + Utils.GLOBAL_REVENUE_FILENAME), Charset.defaultCharset());
+			// Set Global Revenue
+			Rglo.setGlobalRevenue(Double.parseDouble(lines.get(0)));
+			// Print Global Revenue
+			Utils.DEBUG_println("--> Global Revenue is " + Rglo.getGlobalRevenew());
+			
+			/*
+			 * Demand Probability Vectors
+			 */
+			// Get Demands
+			lines = Files.readAllLines(Paths.get(pathToInputFiles + Utils.DEMANDS_FILENAME), Charset.defaultCharset());
+			// Set Demands
+			index = 0;
+			List<Double> values;
+			ValuesVector[] valuesVectors = new ValuesVector[numberOfRegions];
+			DemandPDF[] demandPDFs = new DemandPDF[numberOfRegions];
+			DemandCDF[] demandCDFs = new DemandCDF[numberOfRegions];
+			DemandComplement[] demandComplements = new DemandComplement[numberOfRegions];
+			Rmarginal[] marginalRevenuesAdd = new Rmarginal[numberOfRegions];
+			Rmarginal[] marginalRevenuesRemove = new Rmarginal[numberOfRegions];
+			for (String line : lines) {
+				// Create the regions' probability vector
+				values = new ArrayList<Double>();
+				for (String value : line.split(",")) {
+					values.add(Double.parseDouble(value.trim()));
+				}
+				valuesVectors[index] = new ValuesVector(values);
+				// Create the regions' demand PDFs
+				demandPDFs[index] = new DemandPDF(new Type(String.valueOf(index)), regions[index], valuesVectors[index]);
+				// Create the regions' demand CDFs
+				demandCDFs[index] = new DemandCDF(demandPDFs[index]);
+				// Create the regions' demand complement CDFs
+				demandComplements[index] = new DemandComplement(demandCDFs[index]);
+				// Advance index
+				index++;
+			}
+			// Compute the global demand vectors using convolution
+			Type globalType = new Type("Global");
+			Rloc globalLocalRevenue = new Rloc(Rglo.getGlobalRevenew());
+			Region globalRegion = new Region("Global", globalLocalRevenue);
+			ValuesVector convolvedVector = null;
+			DemandPDF demandPDF = new DemandPDF(globalType, globalRegion, convolvedVector);
+			DemandCDF demandCDF;
+			DemandComplement demandComplement;
+			//// Convolution
+			for (int i = 0; i < numberOfRegions; i++) {
+				demandPDF.setProbabilityVector(convolvedVector);
+				convolvedVector = Utils.convolve(demandPDF, demandPDFs[i]);
+			}
+			//// Set the global demand vectors
+			demandPDF.setProbabilityVector(convolvedVector);
+			demandCDF = new DemandCDF(demandPDF);
+			demandComplement = new DemandComplement(demandCDF);
+			// Compute regions' marginal revenue vectors
+			for (int i = 0; i < numberOfRegions; i++) {
+				// Create the regions' marginal revenue vectors for adding
+				marginalRevenuesAdd[i] = new RmarginalForMultiProblemsAdd(regions[i].getLocalRevenue(), demandComplements[i],
+						demandComplement);
+				// Create the regions' marginal revenue vectors for removing
+				marginalRevenuesRemove[i] = new RmarginalForMultiProblemsRemove(regions[i].getLocalRevenue(), demandComplements[i],
+						demandComplement);
+			}
+			// Print Arrays
+			Utils.DEBUG_println("--> Values Vectors are: " + Arrays.toString(valuesVectors));
+			Utils.DEBUG_println("--> Demand PDFs are: " + Arrays.toString(demandPDFs));
+			Utils.DEBUG_println("--> Demand CDFs are: " + Arrays.toString(demandCDFs));
+			Utils.DEBUG_println("--> Demand Complements are: " + Arrays.toString(demandComplements));
+			Utils.DEBUG_println("--> Gloal Demand PDF is: " + demandPDF.toString());
+			Utils.DEBUG_println("--> Gloal Demand CDF is: " + demandCDF.toString());
+			Utils.DEBUG_println("--> Gloal Demand Complement is: " + demandComplement.toString());
+			Utils.DEBUG_println("--> Marginal Revenues for adding are: " + Arrays.toString(marginalRevenuesAdd));
+			Utils.DEBUG_println("--> Marginal Revenues for removing are: " + Arrays.toString(marginalRevenuesRemove));
+
+			// Store marginal revenues
+			this.marginalRevenuesAdd = new ArrayList<Rmarginal>(Arrays.asList(marginalRevenuesAdd));
+			this.marginalRevenuesRemove = new ArrayList<Rmarginal>(Arrays.asList(marginalRevenuesRemove));
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
-	
-	
+
 	@Override
 	public Solution solve() {
-		
-		if (Main.HIJACK){
-			///////// Hijack marginal revenue vectors /////////
-	        this.marginalRevenues.get(0).valuesVector = new ValuesVector(1.0, 0.8, 0.4, -0.9);
-	        this.marginalRevenues.get(1).valuesVector = new ValuesVector(0.9, 0.7, 0.5, 0.4);
-	        this.marginalRevenues.get(2).valuesVector = new ValuesVector(0.7, 0.6, 0.2, -0.1);
-	        this.marginalRevenues.get(3).valuesVector = new ValuesVector(0.55, 0.1, -0.1, 0.0);
-	        //////////////////////////////////////////////////
+
+		if (Main.HIJACK) {
+			// /////// Hijack marginal revenue vectors /////////
+			this.marginalRevenues.get(0).valuesVector = new ValuesVector(1.0, 0.8, 0.4, -0.9);
+			this.marginalRevenues.get(1).valuesVector = new ValuesVector(0.9, 0.7, 0.5, 0.4);
+			this.marginalRevenues.get(2).valuesVector = new ValuesVector(0.7, 0.6, 0.2, -0.1);
+			this.marginalRevenues.get(3).valuesVector = new ValuesVector(0.55, 0.1, -0.1, 0.0);
+			// ////////////////////////////////////////////////
 		}
-        
+
 		/*
 		 * Run greedy algorithm for optimal resource placement
 		 */
-		
+
 		Resources resources = new Resources();
-		
+
 		// If number of resources limited: stop when you finish resources.
-		// If number resources are unlimited: stop when the FRONT LINE is all negative. 
-		while(resources.getAmount() < Main.AVAILABLE_RESOURCES && !Utils.allFrontLinesAreNegative(marginalRevenues)){
-			// GREEDY: add the resource who have highest value of the demand marginal revenue. Always on FRONT LINE
+		// If number resources are unlimited: stop when the FRONT LINE is all
+		// negative.
+		while (resources.getAmount() < Main.AVAILABLE_RESOURCES && !Utils.allFrontLinesAreNegative(marginalRevenues)) {
+			// GREEDY: add the resource who have highest value of the demand
+			// marginal revenue. Always on FRONT LINE
 			// Search for the right resource
 			double max = Double.NEGATIVE_INFINITY;
-			Rmarginal maxMarginalRevenue = null; 
-			for (Rmarginal marginalRevenue : marginalRevenues){
-				if (!marginalRevenue.isExhausted() && marginalRevenue.getFrontlineValue() > max){
+			Rmarginal maxMarginalRevenue = null;
+			for (Rmarginal marginalRevenue : marginalRevenues) {
+				if (!marginalRevenue.isExhausted() && marginalRevenue.getFrontlineValue() > max) {
 					max = marginalRevenue.getFrontlineValue();
 					maxMarginalRevenue = marginalRevenue;
 				}
@@ -160,38 +237,47 @@ public class MultiRegionPlacementProblem implements Problem {
 			// Add the resource
 			resources.add(maxMarginalRevenue, maxMarginalRevenue.getFrontLine());
 		}
-		
+
 		// Calculate revenue
 		double revenue = 0;
-		for (Rmarginal marginalRevenue : resources.getChosenResources().keySet()){
-			for (Resource resouce : resources.getChosenResources().get(marginalRevenue)){
+		for (Rmarginal marginalRevenue : resources.getChosenResources().keySet()) {
+			for (Resource resouce : resources.getChosenResources().get(marginalRevenue)) {
 				revenue += resouce.getMarginalRevenue();
 			}
 		}
-		
+
 		// Output solution
 		return new Solution(resources, revenue);
 	}
-	
+
 	/**
-	 * @return The region of this single region problem.
+	 * @return The single type in this multiple region problem.
 	 */
-	public Region getRegion() {
-		return this.region;
+	public Type getType() {
+		return this.type;
 	}
 
 	/**
-	 * @return The number of types in this single region problem.
+	 * @return The number of regions in this multiple region problem.
 	 */
-	public int getNumberOfTypes() {
-		return this.numberOfTypes;
+	public int getNumberOfRegions() {
+		return this.numberOfRegions;
 	}
 
 	/**
-	 * @return A list of the marginal revenue vectors of this  single region problem.
+	 * @return A list of the marginal revenue vectors for resource addition of
+	 *         this multiple region problem.
 	 */
-	public List<Rmarginal> getMarginalRevenues() {
-		return this.marginalRevenues;
+	public List<Rmarginal> getMarginalRevenuesForAddition() {
+		return this.marginalRevenuesAdd;
+	}
+
+	/**
+	 * @return A list of the marginal revenue vectors for resource removal of
+	 *         this multiple region problem.
+	 */
+	public List<Rmarginal> getMarginalRevenuesForRemoval() {
+		return this.marginalRevenuesRemove;
 	}
 
 }

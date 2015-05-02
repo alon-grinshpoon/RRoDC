@@ -1,7 +1,7 @@
 package il.ac.tau.cs.RRoDC;
 
+import java.util.ArrayList;
 import java.util.List;
-
 import il.ac.tau.cs.RRoDC.revenues.Rmarginal;
 
 public class Utils {
@@ -13,7 +13,9 @@ public class Utils {
 	public final static String DEMANDS_FILENAME = "/d.txt";
 	public final static String NEW_DEMANDS_FILENAME = "/d_new.txt";
 	public final static String LOCAL_REVENUES_FILENAME = "/Rloc.txt";
+	public final static String GLOBAL_REVENUE_FILENAME = "/Rglo.txt";
 	public final static String CONSTRAINT_FILENAME = "/constraint.txt";	
+	public final static String TYPE_FILENAME = "/type.txt";	
 	
 	/**
 	 * @param marginalRevenues A list of marginal revenue vectors
@@ -124,5 +126,39 @@ public class Utils {
 		if (Main.DEBUG_MODE){
 			print("");
 		}
+	}
+
+	/**
+	 * Discreetly Convolves two functions
+	 * @param function1 A function
+	 * @param function2 A function
+	 * @return A ValuesVector which is the convolution product of the two two functions. If either of the functions is null, it returns the other function.
+	 */
+	public static ValuesVector convolve(Function function1, Function function2) {
+		// Check for null input
+		if (function1 == null && function2 == null){
+			Utils.ErrorAndExit("At least one of the fucntion in the convolution must be non-null.");
+		} else if (function1 == null){
+			return function2.valuesVector.clone();
+		} else if (function2 == null){
+			return function1.valuesVector.clone();
+		}
+		// Check size compatibility of the convolved vectors
+		if (function1.size() != function2.size()){
+			Utils.ErrorAndExit("Convolution must be between same length functions.");
+		}
+		int size = function1.size();
+		List<Double> convolutionValues = new ArrayList<Double>();
+		// Convolve
+		// c_n = a_n (+) b_n = a_0 * b_n + a_1 * b_(n-1) + ... + a_n * b_0
+		for (int i = 0; i < size; i++){
+			double sum = 0;
+			for (int j = 0; j <= i; j++){
+				sum += function1.get(j) * function2.get(i - j);
+			}
+			convolutionValues.add(i, sum);
+		}
+
+		return new ValuesVector(convolutionValues);
 	}
 }

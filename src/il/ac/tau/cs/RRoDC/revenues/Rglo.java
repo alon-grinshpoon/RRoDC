@@ -8,13 +8,22 @@ package il.ac.tau.cs.RRoDC.revenues;
  */
 public class Rglo {
 
-	public final static double GLOBAL_REVENUE = 1;
-
+	public final static double DEFAULT_GLOBAL_REVENUE = 1;
+	private static double globalRevenue = DEFAULT_GLOBAL_REVENUE;
+	
 	/**
-	 * @return The global revenue of a resource
+	 * @return The global revenue of a single resource
 	 */
 	public static final double getGlobalRevenew(){
-		return Rglo.GLOBAL_REVENUE;
+		return globalRevenue;
+	}
+
+	/**
+	 * Set the global revenue of a resource
+	 * @param globalRevenue
+	 */
+	public static void setGlobalRevenue(double globalRevenue) {
+		Rglo.globalRevenue = globalRevenue;
 	}
 	
 }

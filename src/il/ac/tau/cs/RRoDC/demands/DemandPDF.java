@@ -26,12 +26,14 @@ public class DemandPDF extends Function {
 		double sum = 0;
 		for (double value : this.valuesVector){
 			if (Math.abs(value) > 1 || Math.abs(value) < 0){
-				Utils.ErrorAndExit("Given an invalid probability value. All probabilities must be between 0 and 1.");
+				Utils.errorAndExit("Given an invalid probability value. All probabilities must be between 0 and 1.");
 			}
 			sum += value;
 		}
 		if (sum != 1.0){
-			Utils.ErrorAndExit("All probabilities must sum up to 1.");
+			Utils.warn("All probabilities must sum up to 1.");
+			//Utils.ErrorAndExit("All probabilities must sum up to 1.");
+			
 		}
 	}
 

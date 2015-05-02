@@ -98,7 +98,7 @@ public class SingleRegionRepositionProblem implements Problem {
 			// Set New Demands
 			int index = 0;
 			if (numberOfTypes != lines.size()){
-				Utils.ErrorAndExit("You must have the same number of new demand vectors as old ones.");
+				Utils.errorAndExit("You must have the same number of new demand vectors as old ones.");
 			}
 			List<Double> values;
 			ValuesVector[] valuesVectors = new ValuesVector[numberOfTypes];

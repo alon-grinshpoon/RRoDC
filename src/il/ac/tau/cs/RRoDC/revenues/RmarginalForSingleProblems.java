@@ -9,7 +9,7 @@ public class RmarginalForSingleProblems extends Rmarginal {
 	}
 
 	@Override
-	public void computeMerginalRevenue(Rloc localRevenue, DemandComplement demandComplement) {
+	public void computeMarginalRevenue(Rloc localRevenue, DemandComplement demandComplement) {
 		for (int i = 0; i < demandComplement.size(); i++){
 			// Use the definition of marginal revenue
 			double marginalRevenue = localRevenue.getLocalRevenue() * demandComplement.get(i) - Cost.getCost();

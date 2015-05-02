@@ -52,12 +52,54 @@ public class Utils {
 	}
 
 	/**
+	 * Discreetly Convolves two vectors
+	 * @param valuesVector1
+	 * @param valuesVector2
+	 * @return A ValuesVector which is the convolution product of the two vectors. If either of the vectors is null, it returns the other vector.
+	 */
+	public static ValuesVector convolve(ValuesVector valuesVector1, ValuesVector valuesVector2) {
+		// Check for null input
+		if (valuesVector1 == null && valuesVector2 == null){
+			Utils.errorAndExit("At least one of the vector in the convolution must be non-null.");
+		} else if (valuesVector1 == null){
+			return valuesVector2.clone();
+		} else if (valuesVector2 == null){
+			return valuesVector1.clone();
+		}
+		// Check size compatibility of the convolved vectors
+		if (valuesVector1.size() != valuesVector2.size()){
+			Utils.errorAndExit("Convolution must be between same length vectors.");
+		}
+		int size = valuesVector1.size();
+		List<Double> convolutionValues = new ArrayList<Double>();
+		// Convolve
+		// c_n = a_n (+) b_n = a_0 * b_n + a_1 * b_(n-1) + ... + a_n * b_0
+		for (int i = 0; i < size; i++){
+			double sum = 0;
+			for (int j = 0; j <= i; j++){
+				sum += valuesVector1.get(j) * valuesVector2.get(i - j);
+			}
+			convolutionValues.add(i, sum);
+		}
+
+		return new ValuesVector(convolutionValues);
+	}
+	
+	/**
 	 * Prints an error and exits the program immediately
 	 * @param message The message that will be shown before exiting
 	 */
-	public static void ErrorAndExit(String message) {
+	public static void errorAndExit(String message) {
 		System.err.println("[ERROR] " + message);
 		System.exit(1);
+	}
+	
+	/**
+	 * Prints an warning
+	 * @param message The message that will be shown as a warning
+	 */
+	public static void warn(String message) {
+		System.err.println("[WARNING] " + message);	
 	}
 	
 	/**
@@ -126,39 +168,5 @@ public class Utils {
 		if (Main.DEBUG_MODE){
 			print("");
 		}
-	}
-
-	/**
-	 * Discreetly Convolves two functions
-	 * @param function1
-	 * @param function2
-	 * @return A ValuesVector which is the convolution product of the two two functions. If either of the functions is null, it returns the other function.
-	 */
-	public static ValuesVector convolve(Function function1, Function function2) {
-		// Check for null input
-		if (function1 == null && function2 == null){
-			Utils.ErrorAndExit("At least one of the fucntion in the convolution must be non-null.");
-		} else if (function1 == null){
-			return function2.valuesVector.clone();
-		} else if (function2 == null){
-			return function1.valuesVector.clone();
-		}
-		// Check size compatibility of the convolved vectors
-		if (function1.size() != function2.size()){
-			Utils.ErrorAndExit("Convolution must be between same length functions.");
-		}
-		int size = function1.size();
-		List<Double> convolutionValues = new ArrayList<Double>();
-		// Convolve
-		// c_n = a_n (+) b_n = a_0 * b_n + a_1 * b_(n-1) + ... + a_n * b_0
-		for (int i = 0; i < size; i++){
-			double sum = 0;
-			for (int j = 0; j <= i; j++){
-				sum += function1.get(j) * function2.get(i - j);
-			}
-			convolutionValues.add(i, sum);
-		}
-
-		return new ValuesVector(convolutionValues);
 	}
 }

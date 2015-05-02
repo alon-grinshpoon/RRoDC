@@ -148,7 +148,7 @@ public class MultiRegionPlacementProblem implements Problem {
 				}
 				valuesVectors[index] = new ValuesVector(values);
 				// Create the regions' demand PDFs
-				demandPDFs[index] = new DemandPDF(new Type(String.valueOf(index)), regions[index], valuesVectors[index]);
+				demandPDFs[index] = new DemandPDF(type, regions[index], valuesVectors[index]);
 				// Create the regions' demand CDFs
 				demandCDFs[index] = new DemandCDF(demandPDFs[index]);
 				// Create the regions' demand complement CDFs
@@ -157,20 +157,19 @@ public class MultiRegionPlacementProblem implements Problem {
 				index++;
 			}
 			// Compute the global demand vectors using convolution
-			Type globalType = new Type("Global");
-			Rloc globalLocalRevenue = new Rloc(Rglo.getGlobalRevenew());
-			Region globalRegion = new Region("Global", globalLocalRevenue);
 			ValuesVector convolvedVector = null;
-			DemandPDF demandPDF = new DemandPDF(globalType, globalRegion, convolvedVector);
+			DemandPDF demandPDF;
 			DemandCDF demandCDF;
 			DemandComplement demandComplement;
 			//// Call Convolution
 			for (int i = 0; i < numberOfRegions; i++) {
-				demandPDF.setProbabilityVector(convolvedVector);
-				convolvedVector = Utils.convolve(demandPDF, demandPDFs[i]);
+				convolvedVector = Utils.convolve(convolvedVector, demandPDFs[i].getProbabilityVector());
 			}
 			//// Set the global demand vectors
-			demandPDF.setProbabilityVector(convolvedVector);
+			Type globalType = new Type("Global");
+			Rloc globalLocalRevenue = new Rloc(Rglo.getGlobalRevenew());
+			Region globalRegion = new Region("Global", globalLocalRevenue);
+			demandPDF = new DemandPDF(globalType, globalRegion, convolvedVector);
 			demandCDF = new DemandCDF(demandPDF);
 			demandComplement = new DemandComplement(demandCDF);
 			// Compute regions' marginal revenue vectors

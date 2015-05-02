@@ -9,25 +9,47 @@ public abstract class Rmarginal extends Function {
 
 	/**
 	 * Construct a marginal revenue vector
-	 * @param localRevenue A local revenue of this region
-	 * @param demandComplement A complement CDF if this type and region
+	 * 
+	 * @param localRevenue
+	 *            A local revenue of this region
+	 * @param demandComplement
+	 *            A complement CDF if this type and region
 	 */
 	public Rmarginal(Rloc localRevenue, DemandComplement demandComplement) {
+		this(localRevenue, demandComplement, false);
+	}
+
+	/**
+	 * Construct a marginal revenue vector
+	 * 
+	 * @param localRevenue
+	 *            A local revenue of this region
+	 * @param demandComplement
+	 *            A complement CDF if this type and region
+	 * @param overrideMarginalRevenueComputation
+	 *            use to delay the marginal revenue computation and do it
+	 *            yourself in the subclass constructor.
+	 */
+	public Rmarginal(Rloc localRevenue, DemandComplement demandComplement, boolean overrideMarginalRevenueComputation) {
 		super(demandComplement.getType(), demandComplement.getRegion());
 		// Clone original values
 		this.valuesVector = demandComplement.valuesVector.clone();
-		// Compute marginal revenue for all values
-		computeMerginalRevenue(localRevenue, demandComplement);
+		if (!overrideMarginalRevenueComputation) {
+			// Compute marginal revenue for all values
+			computeMarginalRevenue(localRevenue, demandComplement);
+		}
 	}
-	
+
 	/**
-	 * Compute and set the right marginal revenue for the problem. Need to be implemented for every problem individually.
-	 * This requires to extend this class to specific marginal revenue classes.
+	 * Compute and set the right marginal revenue for the problem. Need to be
+	 * implemented for every problem individually. This requires to extend this
+	 * class to specific marginal revenue classes.
+	 * 
 	 * @param localRevenue
 	 * @param demandComplement
 	 */
-	public abstract void computeMerginalRevenue(Rloc localRevenue, DemandComplement demandComplement);
-	
+	public abstract void computeMarginalRevenue(Rloc localRevenue, DemandComplement demandComplement);
+
 	/**
 	 * Set the index front line in the values vector
 	 * 
@@ -45,14 +67,16 @@ public abstract class Rmarginal extends Function {
 	}
 
 	/**
-	 * @return The value that is at the front line of the marginal revenue vector
+	 * @return The value that is at the front line of the marginal revenue
+	 *         vector
 	 */
 	public double getFrontlineValue() {
 		return this.valuesVector.get(frontLine);
 	}
-	
+
 	/**
 	 * Set the value that is at the front line of the marginal revenue vector
+	 * 
 	 * @param value
 	 */
 	public void setFrontlineValue(double value) {
@@ -74,21 +98,21 @@ public abstract class Rmarginal extends Function {
 	}
 
 	/**
-	 * @return True if the front line reached the end of the vector.
-	 * Meaning all values of this marginal revenue vector were chosen
+	 * @return True if the front line reached the end of the vector. Meaning all
+	 *         values of this marginal revenue vector were chosen
 	 */
 	public boolean isExhausted() {
 		return this.frontLine >= this.valuesVector.size();
 	}
-	
+
 	/**
-	 * @return True if the front line is at the start of the vector.
-	 * Meaning all values of this marginal revenue vector were yet to be chosen
+	 * @return True if the front line is at the start of the vector. Meaning all
+	 *         values of this marginal revenue vector were yet to be chosen
 	 */
 	public boolean isUnutilized() {
 		return this.frontLine == 0;
 	}
-	
+
 	@Override
 	public String toString() {
 		return super.toString() + " (frontline: " + this.frontLine + ")";

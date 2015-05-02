@@ -1,5 +1,6 @@
 package il.ac.tau.cs.RRoDC;
 
+import il.ac.tau.cs.RRoDC.problems.MultiRegionPlacementProblem;
 import il.ac.tau.cs.RRoDC.problems.Problem;
 import il.ac.tau.cs.RRoDC.problems.SingleRegionPlacementProblem;
 import il.ac.tau.cs.RRoDC.problems.SingleRegionRepositionProblem;
@@ -35,5 +36,10 @@ public class Main {
 		Problem SingleRegionRepositionProblem = new SingleRegionRepositionProblem("C:/Users/Alon/OneDrive/Documents/לימודים/פרוייקטים/Cloud Research/Inputs/2. SingleRegionRepositionProblem/");
 		Solution repositionProblemSolution = SingleRegionRepositionProblem.solve();
 		repositionProblemSolution.printAll();
+		
+		// Optimal Resource Reposition Under Reposition Constraint
+		Problem multiRegionPlacementProblem = new MultiRegionPlacementProblem("C:/Users/Alon/OneDrive/Documents/לימודים/פרוייקטים/Cloud Research/Inputs/3. MultiRegionPlacementProblem/");
+		Solution multiRegionPlacementProblemSolution = multiRegionPlacementProblem.solve();
+		multiRegionPlacementProblemSolution.printAll();
 	}
 }

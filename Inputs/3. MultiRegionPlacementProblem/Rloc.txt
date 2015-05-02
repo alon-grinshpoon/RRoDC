@@ -1,0 +1,4 @@
+Italy,	1
+Spain,	2
+Isreal, 1
+USA, 2

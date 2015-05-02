@@ -26,19 +26,21 @@ public class Main {
 		 */
 		
 		// Optimal Resource Placement
-		Problem singleRegionPlacementProblem = new SingleRegionPlacementProblem("C:/Users/Alon/OneDrive/Documents/לימודים/פרוייקטים/Cloud Research/Inputs/1. SingleRegionPlacementProblem/");
+		Problem singleRegionPlacementProblem = new SingleRegionPlacementProblem("Inputs/1. SingleRegionPlacementProblem/");
 		Solution placementProblemSolution = singleRegionPlacementProblem.solve();
 		placementProblemSolution.printAll();
 		
 		System.out.println();
 		
 		// Optimal Resource Reposition Under Reposition Constraint
-		Problem SingleRegionRepositionProblem = new SingleRegionRepositionProblem("C:/Users/Alon/OneDrive/Documents/לימודים/פרוייקטים/Cloud Research/Inputs/2. SingleRegionRepositionProblem/");
+		Problem SingleRegionRepositionProblem = new SingleRegionRepositionProblem("Inputs/2. SingleRegionRepositionProblem/");
 		Solution repositionProblemSolution = SingleRegionRepositionProblem.solve();
 		repositionProblemSolution.printAll();
 		
+		System.out.println();
+		
 		// Optimal Resource Reposition Under Reposition Constraint
-		Problem multiRegionPlacementProblem = new MultiRegionPlacementProblem("C:/Users/Alon/OneDrive/Documents/לימודים/פרוייקטים/Cloud Research/Inputs/3. MultiRegionPlacementProblem/");
+		Problem multiRegionPlacementProblem = new MultiRegionPlacementProblem("Inputs/3. MultiRegionPlacementProblem/");
 		Solution multiRegionPlacementProblemSolution = multiRegionPlacementProblem.solve();
 		multiRegionPlacementProblemSolution.printAll();
 	}

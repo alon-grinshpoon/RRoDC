@@ -38,8 +38,9 @@ public class MultiRegionPlacementProblem implements Problem {
 	private Type type;
 	private int numberOfRegions;
 	private Region[] regions;
-	private List<Rmarginal> marginalRevenuesAdd;
-	private List<Rmarginal> marginalRevenuesRemove;
+	private Rmarginal[] marginalRevenuesAdd;
+	private Rmarginal[] marginalRevenuesRemove;
+	private List<Rmarginal> marginalRevenues;
 	private int repositionConstraint;
 
 	/**
@@ -163,7 +164,7 @@ public class MultiRegionPlacementProblem implements Problem {
 			DemandPDF demandPDF = new DemandPDF(globalType, globalRegion, convolvedVector);
 			DemandCDF demandCDF;
 			DemandComplement demandComplement;
-			//// Convolution
+			//// Call Convolution
 			for (int i = 0; i < numberOfRegions; i++) {
 				demandPDF.setProbabilityVector(convolvedVector);
 				convolvedVector = Utils.convolve(demandPDF, demandPDFs[i]);
@@ -193,8 +194,8 @@ public class MultiRegionPlacementProblem implements Problem {
 			Utils.DEBUG_println("--> Marginal Revenues for removing are: " + Arrays.toString(marginalRevenuesRemove));
 
 			// Store marginal revenues
-			this.marginalRevenuesAdd = new ArrayList<Rmarginal>(Arrays.asList(marginalRevenuesAdd));
-			this.marginalRevenuesRemove = new ArrayList<Rmarginal>(Arrays.asList(marginalRevenuesRemove));
+			this.marginalRevenuesAdd = marginalRevenuesAdd;
+			this.marginalRevenuesRemove = marginalRevenuesRemove;
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -204,38 +205,62 @@ public class MultiRegionPlacementProblem implements Problem {
 	@Override
 	public Solution solve() {
 
+		// Initially all resources can be added, therefore the marginal revenues are all addition marginal revenues
+		marginalRevenues =  new ArrayList<Rmarginal>(Arrays.asList(marginalRevenuesAdd));
+		
 		if (Main.HIJACK) {
 			// /////// Hijack marginal revenue vectors /////////
-			this.marginalRevenues.get(0).valuesVector = new ValuesVector(1.0, 0.8, 0.4, -0.9);
-			this.marginalRevenues.get(1).valuesVector = new ValuesVector(0.9, 0.7, 0.5, 0.4);
-			this.marginalRevenues.get(2).valuesVector = new ValuesVector(0.7, 0.6, 0.2, -0.1);
-			this.marginalRevenues.get(3).valuesVector = new ValuesVector(0.55, 0.1, -0.1, 0.0);
+			this.marginalRevenues.get(0).valuesVector = new ValuesVector(1.0, 0.8, 0.7, 0.1);
+			this.marginalRevenues.get(1).valuesVector = new ValuesVector(0.9, 0.6, 0.5, 0.4);
+			this.marginalRevenues.get(2).valuesVector = new ValuesVector(-0.3, -0.8, 0.2, 0.1);
+			this.marginalRevenues.get(3).valuesVector = new ValuesVector(-0.3, 0.1, 0.0, 0.0);
 			// ////////////////////////////////////////////////
 		}
 
 		/*
-		 * Run greedy algorithm for optimal resource placement
+		 * Run greedy algorithm for optimal resource placement for the multiple regions problem
 		 */
-
+		
 		Resources resources = new Resources();
-
-		// If number of resources limited: stop when you finish resources.
-		// If number resources are unlimited: stop when the FRONT LINE is all
-		// negative.
-		while (resources.getAmount() < Main.AVAILABLE_RESOURCES && !Utils.allFrontLinesAreNegative(marginalRevenues)) {
+		
+		// Stop when reaching the reposition constraint or when no attractive elements (positive on right, negative on left).
+		int repositions = 0;
+		while (repositions < this.repositionConstraint && !Utils.allFrontLinesAreUnattractive(marginalRevenues)) {
 			// GREEDY: add the resource who have highest value of the demand
-			// marginal revenue. Always on FRONT LINE
-			// Search for the right resource
-			double max = Double.NEGATIVE_INFINITY;
+			// marginal revenue on both directions of the front line at the same time
+			double max = 0;
 			Rmarginal maxMarginalRevenue = null;
+			int index = 0;
+			int maxIndex = 0;
+			boolean isRemove = false;
 			for (Rmarginal marginalRevenue : marginalRevenues) {
-				if (!marginalRevenue.isExhausted() && marginalRevenue.getFrontlineValue() > max) {
+				if (!marginalRevenue.isExhausted() && marginalRevenue.getFrontlineValue() > Math.abs(max)) {
 					max = marginalRevenue.getFrontlineValue();
 					maxMarginalRevenue = marginalRevenue;
+					maxIndex = index;
+					isRemove = false;
 				}
+				if (!marginalRevenue.isUnutilized() && Math.abs(marginalRevenue.get(marginalRevenue.getFrontLine() - 1)) > max) {
+					max = Math.abs(marginalRevenue.get(marginalRevenue.getFrontLine() - 1));
+					maxMarginalRevenue = marginalRevenue;
+					maxIndex = index;
+					isRemove = true;
+				}
+				index++;
 			}
-			// Add the resource
-			resources.add(maxMarginalRevenue, maxMarginalRevenue.getFrontLine());
+			// Reposition the resource
+			if (isRemove){
+				// Update the marginal revenue vector
+				maxMarginalRevenue.setFrontlineValue(marginalRevenuesAdd[maxIndex].get(maxMarginalRevenue.getFrontLine()));
+				// Remove
+				resources.remove(maxMarginalRevenue, maxMarginalRevenue.getFrontLine());
+			} else {
+				// Update the marginal revenue vector
+				maxMarginalRevenue.setFrontlineValue(marginalRevenuesRemove[maxIndex].get(maxMarginalRevenue.getFrontLine()));
+				// Add
+				resources.add(maxMarginalRevenue, maxMarginalRevenue.getFrontLine());
+			}
+			repositions++;
 		}
 
 		// Calculate revenue
@@ -265,19 +290,10 @@ public class MultiRegionPlacementProblem implements Problem {
 	}
 
 	/**
-	 * @return A list of the marginal revenue vectors for resource addition of
-	 *         this multiple region problem.
+	 * @return A list of the marginal revenue vectors of this multiple region problem.
 	 */
-	public List<Rmarginal> getMarginalRevenuesForAddition() {
-		return this.marginalRevenuesAdd;
-	}
-
-	/**
-	 * @return A list of the marginal revenue vectors for resource removal of
-	 *         this multiple region problem.
-	 */
-	public List<Rmarginal> getMarginalRevenuesForRemoval() {
-		return this.marginalRevenuesRemove;
+	public List<Rmarginal> getMarginalRevenues() {
+		return this.marginalRevenues;
 	}
 
 }

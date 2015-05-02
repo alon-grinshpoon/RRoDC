@@ -140,7 +140,7 @@ public class SingleRegionPlacementProblem implements Problem {
 		}
         
 		/*
-		 * Run greedy algorithm for optimal resource placement
+		 * Run greedy algorithm for optimal resource placement for the single region problem
 		 */
 		
 		Resources resources = new Resources();

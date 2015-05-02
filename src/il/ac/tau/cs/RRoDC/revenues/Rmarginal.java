@@ -50,6 +50,14 @@ public abstract class Rmarginal extends Function {
 	public double getFrontlineValue() {
 		return this.valuesVector.get(frontLine);
 	}
+	
+	/**
+	 * Set the value that is at the front line of the marginal revenue vector
+	 * @param value
+	 */
+	public void setFrontlineValue(double value) {
+		this.valuesVector.set(frontLine, value);
+	}
 
 	/**
 	 * Advance the marginal revenue vector's front line by 1

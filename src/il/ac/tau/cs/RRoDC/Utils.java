@@ -130,8 +130,8 @@ public class Utils {
 
 	/**
 	 * Discreetly Convolves two functions
-	 * @param function1 A function
-	 * @param function2 A function
+	 * @param function1
+	 * @param function2
 	 * @return A ValuesVector which is the convolution product of the two two functions. If either of the functions is null, it returns the other function.
 	 */
 	public static ValuesVector convolve(Function function1, Function function2) {

@@ -16,11 +16,11 @@ public class Main {
 	 * Define Constants
 	 */
 	public final static boolean DEBUG_MODE = true;
+	public final static boolean TRACE_MODE = false;
 	public final static boolean HIJACK = true;
 	public final static int AVAILABLE_RESOURCES = 15;
 
 	public static void main(String[] args) {
-		
 		/*
 		 *  Run single region, multiple types of service
 		 */

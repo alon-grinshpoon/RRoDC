@@ -35,10 +35,16 @@ public class ValuesVector implements Iterable<Double>, Cloneable {
 	/**
 	 * Returns the element at the specified position in this vector
 	 * @param index - index of the element to return 
-	 * @return the element at the specified position in this vector 
+	 * @return the element at the specified position in this vector, 0.0 if the index is out of bound
 	 */
 	public double get(int index) {
-		return values.get(index);
+		// Check for out of bound values
+		if (index >= this.size()){
+			Utils.TRACE_println("[WARN] Accessed an out of bound value in a valuesVector. 0.0 is returned. ");
+			return 0.0;
+		} else {			
+			return values.get(index);
+		}
 	}
 	
 	/**

@@ -66,14 +66,11 @@ public class Utils {
 		} else if (valuesVector2 == null){
 			return valuesVector1.clone();
 		}
-		// Check size compatibility of the convolved vectors
-		if (valuesVector1.size() != valuesVector2.size()){
-			Utils.errorAndExit("Convolution must be between same length vectors.");
-		}
-		int size = valuesVector1.size();
+		int size = valuesVector1.size() + valuesVector2.size();	
 		List<Double> convolutionValues = new ArrayList<Double>();
 		// Convolve
 		// c_n = a_n (+) b_n = a_0 * b_n + a_1 * b_(n-1) + ... + a_n * b_0
+		TRACE_println("Convolving " + valuesVector1.toString() + " and " + valuesVector2.toString() + "...");
 		for (int i = 0; i < size; i++){
 			double sum = 0;
 			for (int j = 0; j <= i; j++){
@@ -81,7 +78,7 @@ public class Utils {
 			}
 			convolutionValues.add(i, sum);
 		}
-
+		TRACE_println("Conveled vector is " + convolutionValues.toString());
 		return new ValuesVector(convolutionValues);
 	}
 	
@@ -166,6 +163,44 @@ public class Utils {
 	 */
 	public static void DEBUG_print(){
 		if (Main.DEBUG_MODE){
+			print("");
+		}
+	}
+	
+	/**
+	 * Print a message to the user's screen if trace mode is enabled.
+	 * @param message The message that will be shown
+	 */
+	public static void TRACE_println(String message){
+		if (Main.TRACE_MODE){
+			System.out.println(message);
+		}
+	}
+	
+	/**
+	 * Print a blank message to the user's screen if trace mode is enabled.
+	 */
+	public static void TRACE_println(){
+		if (Main.TRACE_MODE){
+			println("");
+		}
+	}
+	
+	/**
+	 * Print a message to the user's screen if trace mode is enabled.
+	 * @param message The message that will be shown
+	 */
+	public static void TRACE_print(String message){
+		if (Main.TRACE_MODE){
+			System.out.print(message);
+		}
+	}
+	
+	/**
+	 * Print a blank message to the user's screen if trace mode is enabled.
+	 */
+	public static void TRACE_print(){
+		if (Main.TRACE_MODE){
 			print("");
 		}
 	}

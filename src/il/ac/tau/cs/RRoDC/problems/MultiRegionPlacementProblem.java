@@ -233,14 +233,16 @@ public class MultiRegionPlacementProblem implements Problem {
 			int maxIndex = 0;
 			boolean isRemove = false;
 			for (Rmarginal marginalRevenue : marginalRevenues) {
-				if (!marginalRevenue.isExhausted() && marginalRevenue.getFrontlineValue() > Math.abs(max)) {
+				// Check right of the front line (positive marginal revenue) 
+				if (!marginalRevenue.isExhausted() && marginalRevenue.getFrontlineValue() > max) {
 					max = marginalRevenue.getFrontlineValue();
 					maxMarginalRevenue = marginalRevenue;
 					maxIndex = index;
 					isRemove = false;
 				}
-				if (!marginalRevenue.isUnutilized() && Math.abs(marginalRevenue.get(marginalRevenue.getFrontLine() - 1)) > max) {
-					max = Math.abs(marginalRevenue.get(marginalRevenue.getFrontLine() - 1));
+				// Check left of the front line (negative marginal revenue) 
+				if (!marginalRevenue.isUnutilized() && (marginalRevenue.get(marginalRevenue.getFrontLine() - 1) * (-1)) > max) {
+					max = marginalRevenue.get(marginalRevenue.getFrontLine() - 1) * (-1);
 					maxMarginalRevenue = marginalRevenue;
 					maxIndex = index;
 					isRemove = true;

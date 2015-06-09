@@ -34,7 +34,7 @@ public class Main {
 		
 		// Optimal Resource Reposition Under Reposition Constraint
 		Problem SingleRegionRepositionProblem = new SingleRegionRepositionProblem("Inputs/2. SingleRegionRepositionProblem/");
-		Solution repositionProblemSolution = SingleRegionRepositionProblem.solve();
+		Solution repositionProblemSolution = SingleRegionRepositionProblem.solve();  
 		repositionProblemSolution.printAll();
 		
 		System.out.println();

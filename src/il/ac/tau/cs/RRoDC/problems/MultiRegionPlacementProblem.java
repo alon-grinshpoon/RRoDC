@@ -38,8 +38,9 @@ public class MultiRegionPlacementProblem implements Problem {
 	private Type type;
 	private int numberOfRegions;
 	private Region[] regions;
-	private Rmarginal[] marginalRevenuesAdd;
-	private Rmarginal[] marginalRevenuesRemove;
+	private DemandComplement[] demandComplements;
+	private RmarginalForMultiProblemsAdd[] marginalRevenuesAdd;
+	private RmarginalForMultiProblemsRemove[] marginalRevenuesRemove;
 	private List<Rmarginal> marginalRevenues;
 	private int repositionConstraint;
 
@@ -138,8 +139,8 @@ public class MultiRegionPlacementProblem implements Problem {
 			DemandPDF[] demandPDFs = new DemandPDF[numberOfRegions];
 			DemandCDF[] demandCDFs = new DemandCDF[numberOfRegions];
 			DemandComplement[] demandComplements = new DemandComplement[numberOfRegions];
-			Rmarginal[] marginalRevenuesAdd = new Rmarginal[numberOfRegions];
-			Rmarginal[] marginalRevenuesRemove = new Rmarginal[numberOfRegions];
+			RmarginalForMultiProblemsAdd[] marginalRevenuesAdd = new RmarginalForMultiProblemsAdd[numberOfRegions];
+			RmarginalForMultiProblemsRemove[] marginalRevenuesRemove = new RmarginalForMultiProblemsRemove[numberOfRegions];
 			for (String line : lines) {
 				// Create the regions' probability vector
 				values = new ArrayList<Double>();
@@ -158,9 +159,9 @@ public class MultiRegionPlacementProblem implements Problem {
 			}
 			// Compute the global demand vectors using convolution
 			ValuesVector convolvedVector = null;
-			DemandPDF demandPDF;
-			DemandCDF demandCDF;
-			DemandComplement demandComplement;
+			DemandPDF globalDemandPDF;
+			DemandCDF globalDemandCDF;
+			DemandComplement globalDemandComplement;
 			//// Call Convolution
 			for (int i = 0; i < numberOfRegions; i++) {
 				convolvedVector = Utils.convolve(convolvedVector, demandPDFs[i].getProbabilityVector());
@@ -169,29 +170,31 @@ public class MultiRegionPlacementProblem implements Problem {
 			Type globalType = new Type("Global");
 			Rloc globalLocalRevenue = new Rloc(Rglo.getGlobalRevenew());
 			Region globalRegion = new Region("Global", globalLocalRevenue);
-			demandPDF = new DemandPDF(globalType, globalRegion, convolvedVector);
-			demandCDF = new DemandCDF(demandPDF);
-			demandComplement = new DemandComplement(demandCDF);
+			globalDemandPDF = new DemandPDF(globalType, globalRegion, convolvedVector);
+			globalDemandCDF = new DemandCDF(globalDemandPDF);
+			globalDemandComplement = new DemandComplement(globalDemandCDF);
 			// Compute regions' marginal revenue vectors
 			for (int i = 0; i < numberOfRegions; i++) {
 				// Create the regions' marginal revenue vectors for adding
 				marginalRevenuesAdd[i] = new RmarginalForMultiProblemsAdd(regions[i].getLocalRevenue(), demandComplements[i],
-						demandComplement);
+						globalDemandComplement);
 				// Create the regions' marginal revenue vectors for removing
 				marginalRevenuesRemove[i] = new RmarginalForMultiProblemsRemove(regions[i].getLocalRevenue(), demandComplements[i],
-						demandComplement);
+						globalDemandComplement);
 			}
 			// Print Arrays
 			Utils.DEBUG_println("--> Values Vectors are: " + Arrays.toString(valuesVectors));
 			Utils.DEBUG_println("--> Demand PDFs are: " + Arrays.toString(demandPDFs));
 			Utils.DEBUG_println("--> Demand CDFs are: " + Arrays.toString(demandCDFs));
 			Utils.DEBUG_println("--> Demand Complements are: " + Arrays.toString(demandComplements));
-			Utils.DEBUG_println("--> Gloal Demand PDF is: " + demandPDF.toString());
-			Utils.DEBUG_println("--> Gloal Demand CDF is: " + demandCDF.toString());
-			Utils.DEBUG_println("--> Gloal Demand Complement is: " + demandComplement.toString());
+			Utils.DEBUG_println("--> Gloal Demand PDF is: " + globalDemandPDF.toString());
+			Utils.DEBUG_println("--> Gloal Demand CDF is: " + globalDemandCDF.toString());
+			Utils.DEBUG_println("--> Gloal Demand Complement is: " + globalDemandComplement.toString());
 			Utils.DEBUG_println("--> Marginal Revenues for adding are: " + Arrays.toString(marginalRevenuesAdd));
 			Utils.DEBUG_println("--> Marginal Revenues for removing are: " + Arrays.toString(marginalRevenuesRemove));
 
+			// Store demand complement
+			this.demandComplements = demandComplements;
 			// Store marginal revenues
 			this.marginalRevenuesAdd = marginalRevenuesAdd;
 			this.marginalRevenuesRemove = marginalRevenuesRemove;
@@ -208,13 +211,16 @@ public class MultiRegionPlacementProblem implements Problem {
 		marginalRevenues =  new ArrayList<Rmarginal>(Arrays.asList(marginalRevenuesAdd));
 		
 		if (Main.HIJACK) {
-			// /////// Hijack marginal revenue vectors /////////
+			///////// Hijack marginal revenue vectors /////////
 			this.marginalRevenues.get(0).valuesVector = new ValuesVector(1.0, 0.8, 0.7, 0.1);
 			this.marginalRevenues.get(1).valuesVector = new ValuesVector(0.9, 0.6, 0.5, 0.4);
 			this.marginalRevenues.get(2).valuesVector = new ValuesVector(-0.3, -0.8, 0.2, 0.1);
 			this.marginalRevenues.get(3).valuesVector = new ValuesVector(-0.3, 0.1, 0.0, 0.0);
-			// ////////////////////////////////////////////////
+			//////////////////////////////////////////////////
 		}
+		
+		// Print Arrays
+		Utils.DEBUG_println("--> Initially Marginal Revenues are: " + Arrays.toString(marginalRevenues.toArray()));
 
 		/*
 		 * Run greedy algorithm for optimal resource placement for the multiple regions problem
@@ -229,39 +235,50 @@ public class MultiRegionPlacementProblem implements Problem {
 			// marginal revenue on both directions of the front line at the same time
 			double max = 0;
 			Rmarginal maxMarginalRevenue = null;
-			int index = 0;
-			int maxIndex = 0;
 			boolean isRemove = false;
 			for (Rmarginal marginalRevenue : marginalRevenues) {
 				// Check right of the front line (positive marginal revenue) 
 				if (!marginalRevenue.isExhausted() && marginalRevenue.getFrontlineValue() > max) {
 					max = marginalRevenue.getFrontlineValue();
 					maxMarginalRevenue = marginalRevenue;
-					maxIndex = index;
 					isRemove = false;
 				}
 				// Check left of the front line (negative marginal revenue) 
 				if (!marginalRevenue.isUnutilized() && (marginalRevenue.get(marginalRevenue.getFrontLine() - 1) * (-1)) > max) {
 					max = marginalRevenue.get(marginalRevenue.getFrontLine() - 1) * (-1);
 					maxMarginalRevenue = marginalRevenue;
-					maxIndex = index;
 					isRemove = true;
 				}
-				index++;
 			}
 			// Reposition the resource
 			if (isRemove){
-				// Update the marginal revenue vector
-				maxMarginalRevenue.setFrontlineValue(marginalRevenuesAdd[maxIndex].get(maxMarginalRevenue.getFrontLine()));
 				// Remove
 				resources.remove(maxMarginalRevenue, maxMarginalRevenue.getFrontLine());
 			} else {
-				// Update the marginal revenue vector
-				maxMarginalRevenue.setFrontlineValue(marginalRevenuesRemove[maxIndex].get(maxMarginalRevenue.getFrontLine()));
 				// Add
 				resources.add(maxMarginalRevenue, maxMarginalRevenue.getFrontLine());
 			}
 			repositions++;
+			// Recompute all marginal revenue vectors values
+			for (int i = 0; i < numberOfRegions; i++) {
+				// Recompute the regions' marginal revenue vectors for adding
+				marginalRevenuesAdd[i].recomputeMarginalRevenue(regions[i].getLocalRevenue(), demandComplements[i],	resources.getAmount());
+				// Recompute the regions' marginal revenue vectors for removing
+				marginalRevenuesRemove[i].recomputeMarginalRevenue(regions[i].getLocalRevenue(), demandComplements[i], resources.getAmount());
+			}
+			// Update the marginal revenue vector with the new add/remove marginal revenue values
+			for (int marginalRevenueIndex = 0; marginalRevenueIndex < marginalRevenues.size(); marginalRevenueIndex++) {
+				Rmarginal marginalRevenue = marginalRevenues.get(marginalRevenueIndex);
+				for (int i = 0; i < marginalRevenue.size(); i++){
+					// Update marginal revenue for remove
+					if (i < marginalRevenue.getFrontLine()){
+						marginalRevenue.set(i, marginalRevenuesRemove[marginalRevenueIndex].get(i));
+					} else {
+					// Update marginal revenue for add
+						marginalRevenue.set(i, marginalRevenuesAdd[marginalRevenueIndex].get(i));
+					}
+				}
+			}
 		}
 
 		// Calculate revenue

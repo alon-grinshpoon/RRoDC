@@ -5,6 +5,7 @@ import il.ac.tau.cs.RRoDC.demands.DemandComplement;
 public class RmarginalForMultiProblemsAdd extends Rmarginal {
 
 	private DemandComplement globalDemandComplement;
+	private int globalNumberOfResources = 0;
 	
 	public RmarginalForMultiProblemsAdd(Rloc localRevenue, DemandComplement localDemandComplement, DemandComplement globalDemandComplement) {
 		super(localRevenue, localDemandComplement, true);
@@ -14,11 +15,21 @@ public class RmarginalForMultiProblemsAdd extends Rmarginal {
 
 	@Override
 	public void computeMarginalRevenue(Rloc localRevenue, DemandComplement demandComplement) {
-		for (int i = 0; i < demandComplement.size(); i++){
+		for (int l = 0; l < demandComplement.size(); l++){
 			// Use the definition of marginal revenue
-			double marginalRevenue = localRevenue.getLocalRevenue() * demandComplement.get(i) - Cost.getCost() + Rglo.getGlobalRevenew() * this.globalDemandComplement.get(i + 1);
-			this.valuesVector.set(i, marginalRevenue);
+			double marginalRevenue = localRevenue.getLocalRevenue() * demandComplement.get(l) - Cost.getCost() + Rglo.getGlobalRevenew() * this.globalDemandComplement.get(this.globalNumberOfResources + 1);
+			this.valuesVector.set(l, marginalRevenue);
 		}
 	}
 
+	/**
+	 * Recompute and set the right marginal revenue for the problem depending on the global number of resources chosen.
+	 * @param localRevenue
+	 * @param demandComplement
+	 * @param globalNumberOfResources
+	 */
+	public void recomputeMarginalRevenue(Rloc localRevenue, DemandComplement demandComplement, int globalNumberOfResources) {
+		this.globalNumberOfResources = globalNumberOfResources;
+		computeMarginalRevenue(localRevenue, demandComplement);
+	}
 }

@@ -7,6 +7,17 @@ public class RmarginalForMultiProblemsRemove extends Rmarginal {
 	private DemandComplement globalDemandComplement;
 	private int globalNumberOfResources = 0;
 	
+	/**
+	 * Construct a marginal revenue vector of removal for the multi-region
+	 * problems
+	 * 
+	 * @param localRevenue
+	 *            A local revenue of this region
+	 * @param localDemandComplement
+	 *            A complement CDF of this local type and region
+	 * @param globalDemandComplement
+	 *            A global complement CDF
+	 */
 	public RmarginalForMultiProblemsRemove(Rloc localRevenue, DemandComplement localDemandComplement, DemandComplement globalDemandComplement) {
 		super(localRevenue, localDemandComplement, true);
 		this.globalDemandComplement = globalDemandComplement;

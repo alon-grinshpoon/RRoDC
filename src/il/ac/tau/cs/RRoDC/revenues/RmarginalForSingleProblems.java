@@ -4,6 +4,14 @@ import il.ac.tau.cs.RRoDC.demands.DemandComplement;
 
 public class RmarginalForSingleProblems extends Rmarginal {
 
+	/**
+	 * Construct a marginal revenue vector for the single problem
+	 * 
+	 * @param localRevenue
+	 *            A local revenue of this region
+	 * @param demandComplement
+	 *            A complement CDF of this type and region
+	 */
 	public RmarginalForSingleProblems(Rloc localRevenue, DemandComplement demandComplement) {
 		super(localRevenue, demandComplement);
 	}

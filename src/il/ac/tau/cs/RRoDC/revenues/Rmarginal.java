@@ -13,7 +13,7 @@ public abstract class Rmarginal extends Function {
 	 * @param localRevenue
 	 *            A local revenue of this region
 	 * @param demandComplement
-	 *            A complement CDF if this type and region
+	 *            A complement CDF of this type and region
 	 */
 	public Rmarginal(Rloc localRevenue, DemandComplement demandComplement) {
 		this(localRevenue, demandComplement, false);
